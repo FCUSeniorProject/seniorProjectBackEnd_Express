@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-name">GPS定位</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --base-font-size: 22px;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f0f8ff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            justify-content: flex-start;
+            padding-top: 20px;
+            font-size: var(--base-font-size);
+        }
+
+        h1 {
+            font-weight: bold;
+            margin-bottom: 20px;
+            font-size: calc(var(--base-font-size) * 2);
+        }
+
+        button, span {
+            font-size: var(--base-font-size) !important;
+        }
+
+
+        .back-btn {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: bold;
+        }
+
+        .back-btn img {
+            width: var(--base-font-size);
+            height: var(--base-font-size);
+            vertical-align: middle;
+        }
+
+    </style>
+</head>
+<body>
+
+    <button class="back-btn" onclick="location.href='index.html'">
+        <img src="images/arrow.png" alt="返回" width="24" height="24">
+        <span id="back">返回</span>
+    </button>
+
+    <h1 id="title">GPS定位</h1>
+
+
+    <script>
+        function updateLanguage(lang) {
+            const translations = {
+                "zh-TW": {
+                    "page-name": "GPS定位",
+                    "title": "GPS定位",
+                    "back": "返回"
+                },
+                "en": {
+                    "page-name": "GPS Location",
+                    "title": "GPS Location",
+                    "back": "Back"
+                }
+            };
+            
+            document.getElementById("page-name").textContent = translations[lang]["page-name"];
+            document.getElementById("title").textContent = translations[lang]["title"];
+            document.getElementById("back").textContent = translations[lang]["back"];
+        }
+
+        function applyFontSize() {
+            const savedFontSize = localStorage.getItem("fontSize") || "22";
+            document.documentElement.style.setProperty("--base-font-size", savedFontSize + "px");
+        }
+
+        window.onload = function() {
+            applyFontSize();
+
+            const savedLang = localStorage.getItem("language") || "zh-TW";
+            updateLanguage(savedLang);
+        };
+    </script>
+</body>
+</html>

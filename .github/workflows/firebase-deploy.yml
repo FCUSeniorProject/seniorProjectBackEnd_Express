@@ -1,0 +1,35 @@
+name: Deploy Firebase Functions
+
+on:
+  push:
+    branches:
+      - main  # 當 push 到 main 分支時自動執行部署
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🚀 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 🔥 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22  # 確保 Node.js 版本與 Firebase Functions 相符
+
+      - name: 🔥 Install Firebase CLI
+        run: npm install -g firebase-tools
+
+      - name: 🔐 Setup Firebase Authentication
+        run: |
+          echo "$FIREBASE_SERVICE_ACCOUNT" > "$HOME/firebase-key.json"
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+
+      - name: 📦 Install Dependencies
+        run: npm install
+        working-directory: functions  # 指定 functions 資料夾
+
+      - name: 🚀 Deploy to Firebase
+        run: firebase deploy --only functions --token "$(cat $HOME/firebase-key.json)"

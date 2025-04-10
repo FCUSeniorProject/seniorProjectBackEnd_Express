@@ -33,19 +33,19 @@ jobs:
         working-directory: functions  # 指定 functions 資料夾
 
       - name: Setup FIRESTORE_PROJECT_ID
-        run: firebase functions:secret:set FIRESTORE_PROJECT_ID
+        run: firebase functions:secrets:set FIRESTORE_PROJECT_ID
 
       - name: Enter FIRESTORE_PROJECT_ID
         run: ${secrets.FIRESTORE_PROJECT_ID}
 
       - name: Setup FIRESTORE_CLIENT_EMAIL
-        run: firebase functions:secret:set FIRESTORE_CLIENT_EMAIL
+        run: firebase functions:secrets:set FIRESTORE_CLIENT_EMAIL
 
       - name: Enter FIRESTORE_CLIENT_EMAIL
         run: ${secrets.FIRESTORE_CLIENT_EMAIL}
 
       - name: Setup FIRESTORE_PRIVATE_KEY
-        run: firebase functions:secret:set FIRESTORE_PRIVATE_KEY
+        run: firebase functions:secrets:set FIRESTORE_PRIVATE_KEY
 
       - name: Enter FIRESTORE_PRIVATE_KEY
         run: ${secrets.FIRESTORE_PRIVATE_KEY}

@@ -26,5 +26,8 @@ jobs:
         run: npm install
         working-directory: functions  # 指定 functions 資料夾
 
+      - name: Fix permissions for node modules
+        run: chmod -R +x ./functions/node_modules/.bin
+
       - name: 🚀 Deploy to Firebase
         run: firebase deploy --only functions --token ${{ secrets.FIREBASE_TOKEN }} --debug

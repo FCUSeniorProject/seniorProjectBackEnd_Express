@@ -5,6 +5,21 @@ const logger = require('morgan');
 const functions = require('firebase-functions')
 const session = require('express-session');
 const cors = require('cors');
+const admin = require('firebase-admin')
+
+let firebaseInitialized = false;
+function initializeFirebaseAdmin() {
+    if (!firebaseInitialized) {
+        admin.initializeApp({
+            credential: admin.credential.cert({
+                projectId: process.env.FIRESTORE_PROJECT_ID,
+                clientEmail: process.env.FIRESTORE_CLIENT_EMAIL,
+                privateKey: process.env.FIRESTORE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+            }),
+        });
+        firebaseInitialized = true;
+    }
+}
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
@@ -26,12 +41,27 @@ app.use(cors({
     origin: '*',
     credentials: true
 }));
+app.use((req, res, next) => {
+    initializeFirebaseAdmin();
+    next();
+});
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/api' , setAndGetFirestoreRouter);
+app.get('/api/check_secret' , (req, res) => {{
+    return res.json({
+        projectId: process.env.FIRESTORE_PROJECT_ID,
+         privateKey: process.env.FIRESTORE_PRIVATE_KEY?.replace(/\\n/g, '\n'), // 修正換行符號
+         clientEmail: process.env.FIRESTORE_CLIENT_EMAIL
+    })
+}})
 
 console.log('Server start');
 
-exports.app = functions.https.onRequest(app);
+exports.app = functions.https.onRequest({secrets: [
+        "FIRESTORE_PROJECT_ID",
+        "FIRESTORE_CLIENT_EMAIL",
+        "FIRESTORE_PRIVATE_KEY"
+    ],} , app);
 //module.exports = app;

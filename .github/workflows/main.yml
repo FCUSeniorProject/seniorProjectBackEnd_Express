@@ -17,17 +17,15 @@ jobs:
       - name: 🔥 Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22  # 確保 Node.js 版本與 Firebase Functions 相符
+          node-version: 20  # ✅ 改為 Firebase 支援的版本
 
       - name: 🔥 Install Firebase CLI
         run: npm install -g firebase-tools
 
       - name: 📦 Install Dependencies
-        run: npm install
-        working-directory: functions  # 指定 functions 資料夾
-
-      - name: Fix permissions for node modules
-        run: chmod -R +x ./functions/node_modules/.bin
+        working-directory: functions
+        run: npm ci  # ✅ ci 會清除 node_modules 並用 package-lock 安裝乾淨環境（推薦）
 
       - name: 🚀 Deploy to Firebase
+        working-directory: functions  # ✅ 確保從 functions 資料夾部署
         run: firebase deploy --only functions --token ${{ secrets.FIREBASE_TOKEN }} --debug

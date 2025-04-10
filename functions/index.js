@@ -49,13 +49,6 @@ app.use((req, res, next) => {
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/api' , setAndGetFirestoreRouter);
-app.get('/api/check_secret' , (req, res) => {{
-    return res.json({
-        projectId: process.env.FIRESTORE_PROJECT_ID,
-         privateKey: process.env.FIRESTORE_PRIVATE_KEY?.replace(/\\n/g, '\n'), // 修正換行符號
-         clientEmail: process.env.FIRESTORE_CLIENT_EMAIL
-    })
-}})
 
 console.log('Server start');
 

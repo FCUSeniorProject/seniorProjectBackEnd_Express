@@ -12,18 +12,6 @@
         "*.local"
       ],
       "predeploy": []
-    },
-    {
-      "source": "test",
-      "codebase": "test",
-      "ignore": [
-        "node_modules",
-        ".git",
-        "firebase-debug.log",
-        "firebase-debug.*.log",
-        "*.local"
-      ],
-      "predeploy": []
     }
   ],
   "hosting": {

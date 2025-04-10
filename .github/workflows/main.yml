@@ -1,25 +1,29 @@
 name: Deploy Firebase Functions
 
 on:
-  workflow_dispatch:
   push:
     branches:
       - main  # 當 push 到 main 分支時自動執行部署
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
-      
-      # 先執行打包後部署到 Firebase 上，打包的指令可依據需求來做更改
-      - name: Build
-        run: |
-          yarn
-          yarn build
-      - name: Firebase Deploy
-        run: |
-          sudo npm install -g firebase-tools
-          firebase deploy --token ${{ secrets.FIREBASE_TOKEN }}
+      - name: 🚀 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 🔥 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22  # 確保 Node.js 版本與 Firebase Functions 相符
+
+      - name: 🔥 Install Firebase CLI
+        run: npm install -g firebase-tools
+
+      - name: 📦 Install Dependencies
+        run: npm install
+        working-directory: functions  # 指定 functions 資料夾
+
+      - name: 🚀 Deploy to Firebase
+        run: firebase deploy --token "$FIREBASE_TOKEN"

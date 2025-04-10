@@ -27,4 +27,4 @@ jobs:
         working-directory: functions  # 指定 functions 資料夾
 
       - name: 🚀 Deploy to Firebase
-        run: firebase deploy --token "$FIREBASE_TOKEN"
+        run: firebase deploy --token ${{ secrets.FIREBASE_TOKEN }}

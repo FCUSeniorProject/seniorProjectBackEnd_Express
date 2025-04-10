@@ -28,4 +28,4 @@ jobs:
 
       - name: 🚀 Deploy to Firebase
         working-directory: functions  # ✅ 確保從 functions 資料夾部署
-        run: firebase deploy --only functions --token ${{ secrets.FIREBASE_TOKEN }} --debug
+        run: firebase deploy --only functions --force --token ${{ secrets.FIREBASE_TOKEN }} --debug

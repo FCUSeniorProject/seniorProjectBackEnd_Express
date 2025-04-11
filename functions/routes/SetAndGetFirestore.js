@@ -7,7 +7,7 @@ router.post('/set'  ,  async (req , res) => {
 
     let id = req.body.id;
     let HR = req.body.HR;
-    const db = admin.firestore();
+    const db = admin.firestore(admin.app('DB'));
 
     try {
 
@@ -27,7 +27,7 @@ router.post('/set'  ,  async (req , res) => {
 router.post('/get'  , async (req , res) => {
 
     let id = req.body.id;
-    const db = admin.firestore();
+    const db = admin.firestore(admin.app('DB'));
 
     console.log(id)
 

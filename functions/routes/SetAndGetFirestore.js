@@ -3,7 +3,7 @@ const admin = require('firebase-admin')
 const authenticate  = require('./Authenticate');
 const router = express.Router();
 
-router.post('/set'  ,  async (req , res) => {
+router.post('/set' , authenticate ,  async (req , res) => {
 
     let id = req.body.id;
     let HR = req.body.HR;
@@ -24,7 +24,7 @@ router.post('/set'  ,  async (req , res) => {
     }
 })
 
-router.post('/get'  , async (req , res) => {
+router.post('/get' , authenticate , async (req , res) => {
 
     let id = req.body.id;
     const db = admin.firestore(admin.app('DB'));

@@ -14,18 +14,14 @@
       "predeploy": []
     }
   ],
-  "hosting": {
-    "public": "public",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
-    ],
-    "rewrites": [
-      {
-        "source": "/api/**",
-        "function": "app"
-      }
-    ]
+  "emulators": {
+    "functions": {
+      "host": "localhost",
+      "port": 5001
+    },
+    "hosting": {
+      "host": "localhost",
+      "port": 5000
+    }
   }
 }

@@ -48,7 +48,7 @@ app.use(session({
     saveUninitialized: true
 }));
 app.use(cors({
-    origin: '*',
+    origin: 'https://seniorproject-9a41a.web.app',
     credentials: true
 }));
 app.use((req, res, next) => {

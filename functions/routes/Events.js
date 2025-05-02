@@ -12,6 +12,8 @@ router.get('/', authenticateGet , (req, res) => {
         'Connection': 'keep-alive',
     });
 
+    res.flushHeaders(); // 重要：強制刷新 headers
+
     // 傳送初始訊息
     res.write(`data: Connected\n\n`);
 

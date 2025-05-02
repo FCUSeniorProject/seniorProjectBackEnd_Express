@@ -9,7 +9,7 @@ router.get('/', authenticateGet , (req, res) => {
     res.set({
         'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache',
-        Connection: 'keep-alive',
+        'Connection': 'keep-alive',
     });
 
     // 傳送初始訊息

@@ -7,7 +7,7 @@ const session = require('express-session');
 const cors = require('cors');
 const admin = require('firebase-admin')
 
-//----- 初始化 Firebase SDK -----
+//----- 初始化 Firebase Admin SDK -----
 let firebaseInitialized = false;
 
 function initializeFirebaseAdmin() {
@@ -61,19 +61,21 @@ app.use((req, res, next) => {
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const setAndGetFirestoreRouter = require('./routes/SetAndGetFirestore');
+const eventsRouter = require('./routes/Events')
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/api' , setAndGetFirestoreRouter);
+app.use('/api/events' , eventsRouter);
 //----------
 
 console.log('Server start');
 
 exports.app = functions.https.onRequest({secrets: [
-        "FIRESTORE_PROJECT_ID",
-        "FIRESTORE_CLIENT_EMAIL",
-        "FIRESTORE_PRIVATE_KEY",
-        "AUTHENTICATION_PROJECT_ID",
-        "AUTHENTICATION_CLIENT_EMAIL",
-        "AUTHENTICATION_PRIVATE_KEY"
-    ],} , app);
+    "FIRESTORE_PROJECT_ID",
+    "FIRESTORE_CLIENT_EMAIL",
+    "FIRESTORE_PRIVATE_KEY",
+    "AUTHENTICATION_PROJECT_ID",
+    "AUTHENTICATION_CLIENT_EMAIL",
+    "AUTHENTICATION_PRIVATE_KEY"
+],} , app);

@@ -1,9 +1,9 @@
 const express = require('express');
 const admin = require('firebase-admin')
-const authenticate  = require('./Authenticate');
+const {authenticatePost}  = require('./Authenticate');
 const router = express.Router();
 
-router.post('/set' , authenticate ,  async (req , res) => {
+router.post('/set' , authenticatePost ,  async (req , res) => {
 
     let id = req.body.id;
     let HR = req.body.HR;
@@ -24,7 +24,7 @@ router.post('/set' , authenticate ,  async (req , res) => {
     }
 })
 
-router.post('/get' , authenticate , async (req , res) => {
+router.post('/get' , authenticatePost , async (req , res) => {
 
     let id = req.body.id;
     const db = admin.firestore(admin.app('DB'));

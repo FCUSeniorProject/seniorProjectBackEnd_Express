@@ -71,11 +71,14 @@ app.use('/api/events' , eventsRouter);
 
 console.log('Server start');
 
-exports.app = functions.https.onRequest({secrets: [
-    "FIRESTORE_PROJECT_ID",
-    "FIRESTORE_CLIENT_EMAIL",
-    "FIRESTORE_PRIVATE_KEY",
-    "AUTHENTICATION_PROJECT_ID",
-    "AUTHENTICATION_CLIENT_EMAIL",
-    "AUTHENTICATION_PRIVATE_KEY"
-],} , app);
+exports.app = functions.https.onRequest({
+    secrets: [
+        "FIRESTORE_PROJECT_ID",
+        "FIRESTORE_CLIENT_EMAIL",
+        "FIRESTORE_PRIVATE_KEY",
+        "AUTHENTICATION_PROJECT_ID",
+        "AUTHENTICATION_CLIENT_EMAIL",
+        "AUTHENTICATION_PRIVATE_KEY"
+    ],
+    cors: true
+} , app);

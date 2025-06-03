@@ -18,6 +18,11 @@ router.get('/', authenticate, async (req, res) => {
 
     res.flushHeaders(); // 強制傳送 headers
 
+    // 心跳：每 20 秒發送一個 ping
+    const keepAlive = setInterval(() => {
+        res.write(`event: ping\ndata: {}\n\n`);
+    }, 20000);
+
     const db = admin.firestore(admin.app('DB'));
     const uid = req.user.uid;
 
@@ -44,6 +49,7 @@ router.get('/', authenticate, async (req, res) => {
     // 當 client 關閉連線時，清除所有監聽器
     req.on('close', () => {
         console.log('🔌 SSE client disconnected');
+        clearInterval(keepAlive);
         unsubscribers.forEach(unsub => unsub());
         res.end();
     });

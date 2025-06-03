@@ -2,7 +2,7 @@ const admin = require("firebase-admin");
 const functions = require("firebase-functions");
 
 // 驗證 Firebase ID Token
-async function authenticatePost(req, res, next) {
+async function authenticate(req, res, next) {
 
     const authHeader = req.headers.authorization;
 
@@ -25,7 +25,7 @@ async function authenticatePost(req, res, next) {
     }
 }
 
-async function authenticateGet(req, res, next) {
+async function authenticateSSE(req, res, next) {
 
     const idToken = req.query.token;
 
@@ -41,4 +41,4 @@ async function authenticateGet(req, res, next) {
     }
 }
 
-module.exports = {authenticatePost , authenticateGet};
+module.exports = {authenticate , authenticateSSE};

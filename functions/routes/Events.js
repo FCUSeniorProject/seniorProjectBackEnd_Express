@@ -1,9 +1,9 @@
 const express = require('express');
 const admin = require('firebase-admin')
-const {authenticateGet} = require('./Authenticate')
+const {authenticate} = require('./Authenticate')
 const router = express.Router();
 
-router.get('/', authenticateGet , async (req, res) => {
+router.get('/', authenticate , async (req, res) => {
     // 設定 SSE header
     res.set({
         'Content-Type': 'text/event-stream',

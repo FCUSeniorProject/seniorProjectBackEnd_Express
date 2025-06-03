@@ -60,12 +60,10 @@ app.use((req, res, next) => {
 //----- 功能路由 -----
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
-const setAndGetFirestoreRouter = require('./routes/SetAndGetFirestore');
 const eventsRouter = require('./routes/Events')
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/api' , setAndGetFirestoreRouter);
 app.use('/api/events' , eventsRouter);
 //----------
 

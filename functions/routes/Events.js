@@ -34,10 +34,7 @@ router.get('/', authenticate, async (req, res) => {
 
     devices.forEach((deviceId) => {
         const unsubscribe = db.collection("devices").doc(deviceId).onSnapshot((doc) => {
-            const data = {
-                device: deviceId,
-                HR: doc.data()?.HR || null
-            };
+            const data = doc.data();
 
             console.log('Send SSE:', data);
             res.write(`data: ${JSON.stringify(data)}\n\n`);

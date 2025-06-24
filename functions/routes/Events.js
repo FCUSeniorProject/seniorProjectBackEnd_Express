@@ -1,6 +1,7 @@
 const express = require('express');
 const admin = require('firebase-admin')
 const {authenticate} = require('./Authenticate')
+const {Timestamp} = require("firebase/firestore");
 const router = express.Router();
 const cors = require('cors');
 
@@ -32,13 +33,35 @@ router.get('/', authenticate, async (req, res) => {
     // 儲存所有監聽器引用，以便移除
     const unsubscribers = [];
 
-    devices.forEach((deviceId) => {
+    devices.forEach(async (deviceId) => {
+        // 取得現在時間
+        // const now = new Date();
+        // const tenDaysAgo = new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000);
+        // const firestoreTimestamp = Timestamp.fromDate(tenDaysAgo);
+
+        //取得歷史資料
+        let historyTag = ["heartRate_history", "activityTime_history", "bloodOxygen_history", "calories_history", "sleep_history", "steps_history", "temperature_history"]
+        let history = {}
+
+        await Promise.all(historyTag.map(async (tag) => {
+            const snapshot = await db.collection("devices").doc(deviceId).collection(tag).orderBy('timestamp' , 'asc').get();
+            history[tag] = snapshot.docs.map(doc => doc.data());
+
+            // 傳送個別 history event
+            res.write(`event: updateHistory\ndata: ${JSON.stringify({
+                deviceId,
+                tag,
+                data: history[tag],
+            })}\n\n`);
+        }));
+
         const unsubscribe = db.collection("devices").doc(deviceId).onSnapshot((doc) => {
             const data = doc.data();
 
             console.log('Send SSE:', data);
             res.write(`data: ${JSON.stringify(data)}\n\n`);
         });
+
 
         unsubscribers.push(unsubscribe);
     });

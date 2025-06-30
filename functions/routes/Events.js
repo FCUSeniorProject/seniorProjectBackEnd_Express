@@ -1,7 +1,6 @@
 const express = require('express');
 const admin = require('firebase-admin')
 const {authenticate} = require('./Authenticate')
-const {Timestamp} = require("firebase/firestore");
 const router = express.Router();
 const cors = require('cors');
 
@@ -61,7 +60,6 @@ router.get('/', authenticate, async (req, res) => {
             console.log('Send SSE:', data);
             res.write(`data: ${JSON.stringify(data)}\n\n`);
         });
-
 
         unsubscribers.push(unsubscribe);
     });

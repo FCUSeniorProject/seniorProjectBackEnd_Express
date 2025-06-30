@@ -61,10 +61,12 @@ app.use((req, res, next) => {
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const eventsRouter = require('./routes/Events')
+const devicesRouter = require('./routes/Devices')
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/api/events' , eventsRouter);
+app.use('/api/devices', devicesRouter);
 //----------
 
 console.log('Server start');

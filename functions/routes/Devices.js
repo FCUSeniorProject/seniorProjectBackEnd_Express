@@ -26,7 +26,7 @@ router.post('/' , authenticate , async (req, res) => {
 
     //檢查裝置是否存在
     try {
-        const deviceDoc = await db.collection('devices').doc().get();
+        const deviceDoc = await db.collection('devices').doc(deviceId).get();
         if(deviceDoc.exists) {
             return res.status(403).json({success: false, message: "DeviceID is already exist"});
         }

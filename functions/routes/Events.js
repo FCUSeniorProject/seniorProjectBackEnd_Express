@@ -22,6 +22,8 @@ router.get('/', authenticate, async (req, res) => {
     const keepAlive = setInterval(() => {
         res.write(`event: ping\ndata: {}\n\n`);
     }, 20000);
+    // 連線建立Message
+    res.write(`event: SSEConnected\ndata: {}\n\n`);
 
     const db = admin.firestore(admin.app('DB'));
     const uid = req.user.uid;
@@ -58,7 +60,7 @@ router.get('/', authenticate, async (req, res) => {
             const data = doc.data();
 
             console.log('Send SSE:', data);
-            res.write(`data: ${JSON.stringify(data)}\n\n`);
+            res.write(`event: updateData\ndata: ${JSON.stringify(data)}\n\n`);
         });
 
         unsubscribers.push(unsubscribe);

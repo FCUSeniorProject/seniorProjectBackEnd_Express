@@ -17,10 +17,11 @@ router.post('/' , authenticate , async (req, res) => {
     const deviceAddress = req.body.deviceAddress;
 
     if (!(deviceId && deviceName && deviceAddress)) {
-        return res.json({success: false, message: "Unknown ID , Name or Address"});
+        return res.status(400).json({success: false, message: "Unknown ID , Name or Address"});
     }
 
     const db = admin.firestore(admin.app('DB'));
+    const uid = req.user.uid;
 
     console.log('檢查裝置')
 
@@ -28,7 +29,7 @@ router.post('/' , authenticate , async (req, res) => {
     try {
         const deviceDoc = await db.collection('devices').doc(deviceId).get();
         if(deviceDoc.exists) {
-            return res.status(403).json({success: false, message: "DeviceID is already exist"});
+            return res.status(400).json({success: false, message: "DeviceID is already exist"});
         }
     } catch (e) {
         return res.status(500).json({success: false, message: "Something wrong"});
@@ -36,25 +37,19 @@ router.post('/' , authenticate , async (req, res) => {
 
     console.log('寫入')
 
-    //裝置ID寫入user文件
     try {
-        const uid = req.user.uid;
+        const batch = db.batch();
+
+        //寫入users
         const userDoc = db.collection('users').doc(uid);
-        await userDoc.update({
+        batch.update(userDoc, {
             devices: FieldValue.arrayUnion(deviceId)
-        })
-    } catch (e) {
-        console.log(e);
-        return res.status(500).json({success: false, message: "Something wrong"});
-    }
+        });
 
-    console.log('寫入devices')
-
-    //新增文件至devices
-    try {
+        //寫入devices
         const timestamp = Timestamp.now();
         const deviceDoc = db.collection('devices').doc(deviceId);
-        await deviceDoc.set({
+        batch.set(deviceDoc, {
             activityTime_current: 0,
             activityTime_goal: 0,
             activityTime_timestamp: timestamp,
@@ -83,47 +78,97 @@ router.post('/' , authenticate , async (req, res) => {
             type: "watch"
         })
 
-        const activityTime_history = db.collection('devices').doc(deviceId).collection("activityTime_history");
-        await activityTime_history.add({
+        const activityTime_history = db.collection('devices').doc(deviceId).collection("activityTime_history").doc();
+        batch.set(activityTime_history, {
             minutes: 0,
             timestamp: timestamp
         })
 
-        const bloodOxygen_history = db.collection('devices').doc(deviceId).collection("bloodOxygen_history");
-        await bloodOxygen_history.add({
+        const bloodOxygen_history = db.collection('devices').doc(deviceId).collection("bloodOxygen_history").doc();
+        batch.set(bloodOxygen_history, {
             value: 0,
             timestamp: timestamp
         })
 
-        const calories_history  = db.collection('devices').doc(deviceId).collection("calories_history");
-        await calories_history.add({
+        const calories_history  = db.collection('devices').doc(deviceId).collection("calories_history").doc();
+        batch.set(calories_history, {
             count: 0,
             timestamp: timestamp
         })
 
-        const heartRate_history  = db.collection('devices').doc(deviceId).collection("heartRate_history");
-        await heartRate_history.add({
+        const heartRate_history  = db.collection('devices').doc(deviceId).collection("heartRate_history").doc();
+        batch.set(heartRate_history, {
             value: 0,
             timestamp: timestamp
         })
 
-        const steps_history   = db.collection('devices').doc(deviceId).collection("steps_history");
-        await steps_history.add({
+        const steps_history   = db.collection('devices').doc(deviceId).collection("steps_history").doc();
+        batch.set(steps_history, {
             count: 0,
             timestamp: timestamp
         })
 
-        const temperature_history   = db.collection('devices').doc(deviceId).collection("temperature_history");
-        await temperature_history.add({
+        const temperature_history   = db.collection('devices').doc(deviceId).collection("temperature_history").doc();
+        batch.set(temperature_history, {
             value: 0,
             timestamp: timestamp
         })
 
+        await batch.commit();
     } catch (e) {
         return res.status(500).json({success: false, message: "Something wrong"});
     }
 
     return res.status(200).json({success:true, message: "Nothing wrong"});
+});
+
+router.delete('/:id', authenticate, async (req, res) => {
+
+    const deviceId = req.params.id;
+
+    if (!deviceId) {
+        return res.status(400).json({success: false, message: "Unknown ID"});
+    }
+
+    const db = admin.firestore(admin.app('DB'));
+    const uid = req.user.uid;
+
+    //檢查裝置是否存在
+    try {
+        const deviceDoc = await db.collection('devices').doc(deviceId).get();
+        if(!deviceDoc.exists) {
+            return res.status(400).json({success: false, message: "DeviceID is not exist"});
+        }
+    } catch (e) {
+        return res.status(500).json({success: false, message: "Something wrong"});
+    }
+
+    let devices = []
+    try {
+        const userDoc = await db.collection("users").doc(uid).get();
+        devices = userDoc.data()?.devices || [];
+    }  catch (e) {
+        return res.status(500).json({success: false, message: "Something wrong"});
+    }
+
+    if (devices.find(id => id === deviceId)) {
+        try {
+            const batch = db.batch();
+            const userDoc = db.collection("users").doc(uid);
+            batch.update(userDoc, {
+                devices: FieldValue.arrayRemove(deviceId)
+            });
+
+            const deviceDoc = db.collection('devices').doc(deviceId);
+            batch.delete(deviceDoc);
+            await batch.commit();
+            return res.json({success: true, message:"Nothing wrong"})
+        } catch (e) {
+            return res.status(500).json({success: false, message: "Something wrong"});
+        }
+    } else {
+        return res.status(400).json({success: false, message: "Only owner can delete device"});
+    }
 })
 
 module.exports = router;

@@ -15,6 +15,8 @@ router.post('/' , authenticate , async (req, res) => {
     const deviceId = req.body.deviceId;
     const deviceName = req.body.deviceName;
     const deviceAddress = req.body.deviceAddress;
+    const deviceLat = req.body.deviceLat;
+    const deviceLng = req.body.deviceLng;
 
     if (!(deviceId && deviceName && deviceAddress)) {
         return res.status(400).json({success: false, message: "Unknown ID , Name or Address"});
@@ -54,6 +56,8 @@ router.post('/' , authenticate , async (req, res) => {
             activityTime_goal: 0,
             activityTime_timestamp: timestamp,
             address: deviceAddress,
+            address_lat: deviceLat,
+            address_lng: deviceLng,
             batteryLevel: 0,
             bloodOxygen_current: 0,
             bloodOxygen_timestamp: timestamp,
@@ -121,6 +125,46 @@ router.post('/' , authenticate , async (req, res) => {
 
     return res.status(200).json({success:true, message: "Nothing wrong"});
 });
+
+router.put('/:id', authenticate, async  (req, res) => {
+
+    const deviceId = req.params.id;
+
+    if (!deviceId) {
+        return res.status(400).json({success: false, message: "Unknown ID"});
+    }
+
+    const db = admin.firestore(admin.app('DB'));
+    const uid = req.user.uid;
+
+    //檢查裝置是否存在
+    try {
+        const deviceDoc = await db.collection('devices').doc(deviceId).get();
+        if(!deviceDoc.exists) {
+            return res.status(400).json({success: false, message: "DeviceID is not exist"});
+        }
+    } catch (e) {
+        return res.status(500).json({success: false, message: "Something wrong"});
+    }
+
+    let devices = []
+    try {
+        const userDoc = await db.collection("users").doc(uid).get();
+        devices = userDoc.data()?.devices || [];
+    }  catch (e) {
+        return res.status(500).json({success: false, message: "Something wrong"});
+    }
+
+    if (devices.find(id => id === deviceId)) {
+        try {
+            const deviceDoc = db.collection('devices').doc(deviceId);
+        } catch (e) {
+            return res.status(500).json({success: false, message: "Something wrong"});
+        }
+    } else {
+        return res.status(400).json({success: false, message: "Only owner can delete device"});
+    }
+})
 
 router.delete('/:id', authenticate, async (req, res) => {
 

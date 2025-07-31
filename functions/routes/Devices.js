@@ -5,9 +5,20 @@ const {authenticate} = require('./Authenticate')
 
 const router = express.Router();
 
-// router.get('/' , authenticate , (res , req) => {
-//
-// })
+router.get('/' , authenticate , async (req, res) => {
+    const db = admin.firestore(admin.app('DB'));
+    const uid = req.user.uid;
+
+    let devices = []
+    try {
+        const userDoc = await db.collection("users").doc(uid).get();
+        devices = userDoc.data()?.devices || [];
+    } catch (e) {
+        return res.status(500).json({success: false, message: "Something wrong"});
+    }
+
+    return res.status(200).json({success: true, message: 'Nothing wrong', data: devices});
+})
 
 router.post('/' , authenticate , async (req, res) => {
 
@@ -213,6 +224,42 @@ router.delete('/:id', authenticate, async (req, res) => {
     } else {
         return res.status(400).json({success: false, message: "Only owner can delete device"});
     }
+})
+
+router.get('/history/:id', authenticate, async (req, res) => {
+
+    const deviceId = req.params.id;
+
+    if (!deviceId) {
+        return res.status(400).json({success: false, message: "Unknown ID"});
+    }
+
+    const db = admin.firestore(admin.app('DB'));
+
+    //檢查裝置是否存在
+    try {
+        const deviceDoc = await db.collection('devices').doc(deviceId).get();
+        if(!deviceDoc.exists) {
+            return res.status(400).json({success: false, message: "DeviceID is not exist"});
+        }
+    } catch (e) {
+        return res.status(500).json({success: false, message: "Something wrong"});
+    }
+
+    //取得歷史資料
+    let historyTag = ["heartRate_history", "activityTime_history", "bloodOxygen_history", "calories_history", "sleep_history", "steps_history", "temperature_history"]
+    let history = {}
+
+    try {
+        await Promise.all(historyTag.map(async (tag) => {
+            const snapshot = await db.collection("devices").doc(deviceId).collection(tag).orderBy('timestamp', 'asc').get();
+            history[tag] = snapshot.docs.map(doc => doc.data());
+        }));
+    } catch (e) {
+        return res.status(500).json({success: false, message: "Something wrong"});
+    }
+
+    return res.status(200).json({success:true, message: "Nothing wrong", data: history});
 })
 
 module.exports = router;

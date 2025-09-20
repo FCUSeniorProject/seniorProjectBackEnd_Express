@@ -129,6 +129,16 @@ router.post('/' , authenticate , async (req, res) => {
             timestamp: timestamp
         })
 
+        const sleep_history = db.collection('devices').doc(deviceId).collection("sleep_history").doc();
+        batch.set(sleep_history, {
+            date: timestamp,
+            awake: 0,
+            deep: 0,
+            light: 0,
+            rem: 0,
+            total: 0
+        })
+
         await batch.commit();
     } catch (e) {
         return res.status(500).json({success: false, message: "Something wrong"});
@@ -252,7 +262,9 @@ router.get('/history/:id', authenticate, async (req, res) => {
 
     try {
         await Promise.all(historyTag.map(async (tag) => {
-            const snapshot = await db.collection("devices").doc(deviceId).collection(tag).orderBy('timestamp', 'asc').get();
+            // 睡眠歷史使用 date 排序，其他使用 timestamp 排序
+            const orderByField = tag === 'sleep_history' ? 'date' : 'timestamp';
+            const snapshot = await db.collection("devices").doc(deviceId).collection(tag).orderBy(orderByField, 'asc').get();
             history[tag] = snapshot.docs.map(doc => doc.data());
         }));
     } catch (e) {

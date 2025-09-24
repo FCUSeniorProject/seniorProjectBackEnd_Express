@@ -3,7 +3,6 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const functions = require('firebase-functions/v2')
-const session = require('express-session');
 const cors = require('cors');
 const admin = require('firebase-admin')
 
@@ -42,11 +41,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(session({
-    secret: 'mySecret',
-    resave: false,
-    saveUninitialized: true
-}));
 app.use(cors({
     origin: '*',
     credentials: true
@@ -62,11 +56,13 @@ const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/Users');
 const eventsRouter = require('./routes/Events')
 const devicesRouter = require('./routes/Devices')
+const ecgRouter = require('./routes/ECG')
 
 app.use('/', indexRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/events' , eventsRouter);
 app.use('/api/devices', devicesRouter);
+app.use('/api/ecg', ecgRouter);
 //----------
 
 console.log('Server start');

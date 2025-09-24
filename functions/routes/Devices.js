@@ -226,6 +226,40 @@ router.delete('/:id', authenticate, async (req, res) => {
     }
 })
 
+router.get('/history/v2', authenticate, async (req, res) => {
+    const db = admin.firestore(admin.app('DB'));
+    let history = {};
+
+    try {
+        const heartRate_history = await db.collection('health_data').doc('heartRate').collection('records').orderBy('date', 'asc').get();
+        history['heartRate_history'] = heartRate_history.docs.map((item) => {
+            return {
+                timestamp: item.data().date,
+                value: item.data().value
+            }
+        })
+
+        const steps_history = await db.collection('health_data').doc('steps').collection('records').orderBy('date', 'asc').get();
+        history['steps_history'] = steps_history.docs.map((item) => {
+            return {
+                timestamp: item.data().date,
+                count: item.data().value
+            }
+        })
+
+        let historyTag = ["heartRate_history", "activityTime_history", "bloodOxygen_history", "calories_history", "sleep_history", "steps_history", "temperature_history"]
+        history['activityTime_history'] = [];
+        history['bloodOxygen_history'] = [];
+        history['calories_history'] = [];
+        history['sleep_history'] = [];
+        history['temperature_history'] = []
+    } catch (e) {
+        return res.status(500).json({success: false, message: "Something wrong"});
+    }
+
+    return res.status(200).json({success:true, message: "Nothing wrong", data: history});
+})
+
 router.get('/history/:id', authenticate, async (req, res) => {
 
     const deviceId = req.params.id;

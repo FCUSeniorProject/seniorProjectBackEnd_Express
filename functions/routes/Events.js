@@ -116,12 +116,20 @@ router.get('/v2', authenticate, (req, res) => {
         type: "watch"
     };
 
+    const check = (item) => {
+        return item.heartRate_current !== 0 &&
+               item.steps_current !== 0 &&
+               item.activityTime_current !== 0 &&
+               item.bloodOxygen_current !== 0 &&
+               item.calories_current !== 0
+    }
+
     unsubscribers.push(db.collection('health_data').doc('heartRate').onSnapshot((doc) => {
         const data = doc.data();
         templateData['heartRate_current'] = data.latestValue;
         templateData['heartRate_timestamp'] = data.lastUpdated;
 
-        if (templateData['heartRate_current'] !== 0) {
+        if (check(templateData)) {
             res.write(`event: updateData\ndata: ${JSON.stringify(templateData)}\n\n`);
         }
     }))
@@ -131,7 +139,7 @@ router.get('/v2', authenticate, (req, res) => {
         templateData['steps_current'] = data.latestValue;
         templateData['steps_timestamp'] = data.lastUpdated;
 
-        if (templateData['steps_current'] !== 0) {
+        if (check(templateData)) {
             res.write(`event: updateData\ndata: ${JSON.stringify(templateData)}\n\n`);
         }
     }))
@@ -141,7 +149,7 @@ router.get('/v2', authenticate, (req, res) => {
         templateData['activityTime_current'] = data.latestValue;
         templateData['activityTime_timestamp'] = data.lastUpdated;
 
-        if (templateData['activityTime_current'] !== 0) {
+        if (check(templateData)) {
             res.write(`event: updateData\ndata: ${JSON.stringify(templateData)}\n\n`);
         }
     }))
@@ -151,7 +159,7 @@ router.get('/v2', authenticate, (req, res) => {
         templateData['bloodOxygen_current'] = data.latestValue;
         templateData['bloodOxygen_timestamp'] = data.lastUpdated;
 
-        if (templateData['bloodOxygen_current'] !== 0) {
+        if (check(templateData)) {
             res.write(`event: updateData\ndata: ${JSON.stringify(templateData)}\n\n`);
         }
     }))
@@ -161,7 +169,7 @@ router.get('/v2', authenticate, (req, res) => {
         templateData['calories_current'] = data.latestValue;
         templateData['calories_timestamp'] = data.lastUpdated;
 
-        if (templateData['calories_current'] !== 0) {
+        if (check(templateData)) {
             res.write(`event: updateData\ndata: ${JSON.stringify(templateData)}\n\n`);
         }
     }))

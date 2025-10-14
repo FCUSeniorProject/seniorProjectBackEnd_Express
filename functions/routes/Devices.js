@@ -257,10 +257,32 @@ router.get('/history/v2', authenticate, async (req, res) => {
             }
         })
 
+        const activityTime_history = await db.collection('health_data').doc('activityTime_history').collection('records').orderBy('date', 'asc').get();
+        history['activityTime_history'] = activityTime_history.docs.map((item) => {
+            return {
+                timestamp: item.data().date,
+                minutes: item.data().value
+            }
+        });
+
+        const bloodOxygen_history = await db.collection('health_data').doc('bloodOxygen_history').collection('records').orderBy('date', 'asc').get();
+        history['bloodOxygen_history'] = bloodOxygen_history.docs.map((item) => {
+            return {
+                timestamp: item.data().date,
+                value: item.data().value
+            }
+        })
+
+        const calories_history = await db.collection('health_data').doc('calories_history').collection('records').orderBy('date', 'asc').get();
+        history['calories_history'] = calories_history.docs.map((item) => {
+            return {
+                timestamp: item.data().date,
+                count: item.data().value
+            }
+        });
+
         let historyTag = ["heartRate_history", "activityTime_history", "bloodOxygen_history", "calories_history", "sleep_history", "steps_history", "temperature_history"]
-        history['activityTime_history'] = [];
-        history['bloodOxygen_history'] = [];
-        history['calories_history'] = [];
+
         history['sleep_history'] = [];
         history['temperature_history'] = []
     } catch (e) {

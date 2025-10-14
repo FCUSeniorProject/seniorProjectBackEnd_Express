@@ -120,14 +120,50 @@ router.get('/v2', authenticate, (req, res) => {
         const data = doc.data();
         templateData['heartRate_current'] = data.latestValue;
         templateData['heartRate_timestamp'] = data.lastUpdated;
-        res.write(`event: updateData\ndata: ${JSON.stringify(templateData)}\n\n`);
+
+        if (templateData['heartRate_current'] !== 0) {
+            res.write(`event: updateData\ndata: ${JSON.stringify(templateData)}\n\n`);
+        }
     }))
 
     unsubscribers.push(db.collection('health_data').doc('steps').onSnapshot((doc) => {
         const data = doc.data();
         templateData['steps_current'] = data.latestValue;
         templateData['steps_timestamp'] = data.lastUpdated;
-        res.write(`event: updateData\ndata: ${JSON.stringify(templateData)}\n\n`);
+
+        if (templateData['steps_current'] !== 0) {
+            res.write(`event: updateData\ndata: ${JSON.stringify(templateData)}\n\n`);
+        }
+    }))
+
+    unsubscribers.push(db.collection('health_data').doc('activityTime_history').onSnapshot((doc) => {
+        const data = doc.data();
+        templateData['activityTime_current'] = data.latestValue;
+        templateData['activityTime_timestamp'] = data.lastUpdated;
+
+        if (templateData['activityTime_current'] !== 0) {
+            res.write(`event: updateData\ndata: ${JSON.stringify(templateData)}\n\n`);
+        }
+    }))
+
+    unsubscribers.push(db.collection('health_data').doc('bloodOxygen_history').onSnapshot((doc) => {
+        const data = doc.data();
+        templateData['bloodOxygen_current'] = data.latestValue;
+        templateData['bloodOxygen_timestamp'] = data.lastUpdated;
+
+        if (templateData['bloodOxygen_current'] !== 0) {
+            res.write(`event: updateData\ndata: ${JSON.stringify(templateData)}\n\n`);
+        }
+    }))
+
+    unsubscribers.push(db.collection('health_data').doc('calories_history').onSnapshot((doc) => {
+        const data = doc.data();
+        templateData['calories_current'] = data.latestValue;
+        templateData['calories_timestamp'] = data.lastUpdated;
+
+        if (templateData['calories_current'] !== 0) {
+            res.write(`event: updateData\ndata: ${JSON.stringify(templateData)}\n\n`);
+        }
     }))
 
     // 當 client 關閉連線時，清除所有監聽器

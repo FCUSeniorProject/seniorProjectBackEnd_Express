@@ -174,10 +174,30 @@ router.get('/v2', authenticate, (req, res) => {
         }
     }))
 
+    const sendLocationData = async () => {
+        const snapshot = await db.collection('location_records').orderBy('timestamp', 'desc').limit(1).get();
+
+        if (!snapshot.empty) {
+            const latestDoc = snapshot.docs[0];
+            const data = latestDoc.data();
+            templateData['location_lat'] = data.latitude;
+            templateData['location_lng'] = data.longitude;
+            templateData['location_timestamp'] = data.timestamp;
+
+            if (check(templateData)) {
+                res.write(`event: updateData\ndata: ${JSON.stringify(templateData)}\n\n`);
+            }
+        }
+    }
+
+    sendLocationData();
+    const location = setInterval(sendLocationData, 10000)
+
     // 當 client 關閉連線時，清除所有監聽器
     req.on('close', () => {
         console.log('🔌 SSE client disconnected');
         clearInterval(keepAlive);
+        clearInterval(location)
         unsubscribers.forEach(unsub => unsub());
         res.end();
     });

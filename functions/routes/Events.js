@@ -107,6 +107,18 @@ router.get('/v2', authenticate, (req, res) => {
         location_timestamp: timestamp,
         model: "",
         name: '張仁維',
+        standing_current: 0,
+        standing_timestamp: timestamp,
+        standing_range: {
+            start: timestamp,
+            end: timestamp
+        },
+        distance_current: 0,
+        distance_timestamp: timestamp,
+        distance_range: {
+            start: timestamp,
+            end: timestamp
+        },
         status: "normal",
         steps_current: 0,
         steps_goal: 0,
@@ -121,7 +133,9 @@ router.get('/v2', authenticate, (req, res) => {
                item.steps_current !== 0 &&
                item.activityTime_current !== 0 &&
                item.bloodOxygen_current !== 0 &&
-               item.calories_current !== 0
+               item.calories_current !== 0 &&
+               item.standing_current !== 0 &&
+               item.distance_current !== 0
     }
 
     unsubscribers.push(db.collection('health_data').doc('heartRate').onSnapshot((doc) => {
@@ -168,6 +182,28 @@ router.get('/v2', authenticate, (req, res) => {
         const data = doc.data();
         templateData['calories_current'] = data.latestValue;
         templateData['calories_timestamp'] = data.lastUpdated;
+
+        if (check(templateData)) {
+            res.write(`event: updateData\ndata: ${JSON.stringify(templateData)}\n\n`);
+        }
+    }))
+
+    unsubscribers.push(db.collection('health_data').doc('standing').onSnapshot((doc) => {
+        const data = doc.data();
+        templateData['standing_current'] = data.latestValue;
+        templateData['standing_timestamp'] = data.lastUpdated;
+        templateData['standing_range'] = data.dataRange;
+
+        if (check(templateData)) {
+            res.write(`event: updateData\ndata: ${JSON.stringify(templateData)}\n\n`);
+        }
+    }))
+
+    unsubscribers.push(db.collection('health_data').doc('distance').onSnapshot((doc) => {
+        const data = doc.data();
+        templateData['distance_current'] = data.latestValue;
+        templateData['distance_timestamp'] = data.lastUpdated;
+        templateData['distance_range'] = data.dataRange;
 
         if (check(templateData)) {
             res.write(`event: updateData\ndata: ${JSON.stringify(templateData)}\n\n`);

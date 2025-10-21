@@ -286,6 +286,24 @@ router.get('/history/v2', authenticate, async (req, res) => {
             }
         });
 
+        const distance_history = await db.collection('health_data').doc('distance').collection('records').orderBy('date', 'asc').get();
+        history['distance_history'] = distance_history.docs.map((item) => {
+            return {
+                timestamp: item.data().date,
+                value: item.data().value,
+                label: item.data().label
+            }
+        });
+
+        const standing_history = await db.collection('health_data').doc('standing').collection('records').orderBy('date', 'asc').get();
+        history['standing_history'] = standing_history.docs.map((item) => {
+            return {
+                timestamp: item.data().date,
+                value: item.data().value,
+                label: item.data().label
+            }
+        });
+
         let historyTag = ["heartRate_history", "activityTime_history", "bloodOxygen_history", "calories_history", "sleep_history", "steps_history", "temperature_history"]
 
         history['sleep_history'] = [];

@@ -245,7 +245,8 @@ router.get('/history/v2', authenticate, async (req, res) => {
         history['heartRate_history'] = heartRate_history.docs.map((item) => {
             return {
                 timestamp: item.data().date,
-                value: item.data().value
+                value: item.data().value,
+                label: item.data().label
             }
         })
 
@@ -253,7 +254,8 @@ router.get('/history/v2', authenticate, async (req, res) => {
         history['steps_history'] = steps_history.docs.map((item) => {
             return {
                 timestamp: item.data().date,
-                count: item.data().value
+                count: item.data().value,
+                label: item.data().label
             }
         })
 
@@ -261,7 +263,8 @@ router.get('/history/v2', authenticate, async (req, res) => {
         history['activityTime_history'] = activityTime_history.docs.map((item) => {
             return {
                 timestamp: item.data().date,
-                minutes: item.data().value
+                minutes: item.data().value,
+                label: item.data().label
             }
         });
 
@@ -269,7 +272,8 @@ router.get('/history/v2', authenticate, async (req, res) => {
         history['bloodOxygen_history'] = bloodOxygen_history.docs.map((item) => {
             return {
                 timestamp: item.data().date,
-                value: item.data().value
+                value: item.data().value,
+                label: item.data().label
             }
         })
 
@@ -277,7 +281,8 @@ router.get('/history/v2', authenticate, async (req, res) => {
         history['calories_history'] = calories_history.docs.map((item) => {
             return {
                 timestamp: item.data().date,
-                count: item.data().value
+                count: item.data().value,
+                label: item.data().label
             }
         });
 

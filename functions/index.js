@@ -74,7 +74,8 @@ exports.app = functions.https.onRequest({
         "FIRESTORE_PRIVATE_KEY",
         "AUTHENTICATION_PROJECT_ID",
         "AUTHENTICATION_CLIENT_EMAIL",
-        "AUTHENTICATION_PRIVATE_KEY"
+        "AUTHENTICATION_PRIVATE_KEY",
+        "GPT_TOKEN"
     ],
     cors: true
 } , app);

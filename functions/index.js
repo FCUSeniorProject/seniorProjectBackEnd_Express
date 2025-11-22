@@ -57,12 +57,14 @@ const usersRouter = require('./routes/Users');
 const eventsRouter = require('./routes/Events')
 const devicesRouter = require('./routes/Devices')
 const ecgRouter = require('./routes/ECG')
+const gptRouter = require('./routes/GPT')
 
 app.use('/', indexRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/events' , eventsRouter);
 app.use('/api/devices', devicesRouter);
 app.use('/api/ecg', ecgRouter);
+app.use('/api/gpt', gptRouter);
 //----------
 
 console.log('Server start');
@@ -77,5 +79,6 @@ exports.app = functions.https.onRequest({
         "AUTHENTICATION_PRIVATE_KEY",
         "GPT_TOKEN"
     ],
-    cors: true
+    cors: true,
+    timeoutSeconds: 540
 } , app);

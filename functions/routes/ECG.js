@@ -10,7 +10,7 @@ router.get('/', async (req, res) => {
 
     try {
         for (let i = 0; i <= 30; i++) {
-            const dataDoc = ECGCollection.doc(`0CA0AED9-810E-43DE-97A1-C21B6CA275EB_batch_${i}`);
+            const dataDoc = ECGCollection.doc(`6280AD6A-FA61-4455-A0AF-3AFA91EB1EAF_batch_${i}`);
             const data = (await dataDoc.get()).data();
             data.dataPoints.forEach((item) => {
                 ECGRawData.push(item);
